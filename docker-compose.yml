@@ -1,23 +1,14 @@
-version: "3.7"
-
+version: '3.1'
 services:
-  db:
-    build:
-      context: .
-      dockerfile: .dockerfile
-    image: github.com/Thalisonh/crud-golang
-    container_name: crud-golang
-    restart: unless-stopped
-    tty: true
-    ports:
-      - "25432:5432"
-    environment:
-      POSTGRES_DB: books
-      POSTGRES_USER: admin
-      POSTGRES_PASSWORD: 123456
-      PGDATA: /var/lib/postgresql/data/webapi-mvc
-    volumes:
-      - webapi-mvc:/var/lib/postgresql/data
-
-volumes:
-  webapi-mvc:
+    mysql:
+        image: 'mysql:8.0'
+        working_dir: /application
+        volumes:
+            - '.:/application'
+        environment:
+            - MYSQL_ROOT_PASSWORD=thalison
+            - MYSQL_DATABASE=thalison
+            - MYSQL_USER=thalison
+            - MYSQL_PASSWORD=thalison
+        ports:
+            - '3304:3306'

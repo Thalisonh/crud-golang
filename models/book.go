@@ -1,19 +1,16 @@
 package models
 
 import (
-	"time"
-
 	"gorm.io/gorm"
 )
 
 type Book struct {
-	ID          uint           `json: "id" gorm: "primaryKey"`
-	Name        string         `json: "name"`
-	Description string         `json: "description"`
-	MediumPrice string         `json: "medium_price"`
-	Author      string         `json: "author"`
-	ImageURL    string         `json: "img_url`
-	CreatedAt   time.Time      `json: "created"`
-	UpdatedAt   time.Time      `json: "updated"`
-	DeletedAt   gorm.DeletedAt `gorm: "index" json:"deleted"`
+	gorm.Model
+	ID          uint   `gorm: "id" gorm: "primaryKey"`
+	Name        string `gorm: "name"`
+	Description string `gorm: "description"`
+	MediumPrice string `gorm: "medium_price"`
+	Author      string `gorm: "author"`
+	ImageURL    string `gorm: "img_url`
+
 }
