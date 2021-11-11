@@ -1,7 +1,6 @@
 package book
 
 import (
-	"github.com/Thalisonh/crud-golang/database"
 	"github.com/Thalisonh/crud-golang/database/entity"
 	"net/http"
 	"strconv"
@@ -9,25 +8,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var books = []entity.Book{
-	{ID: 1, Author: "Thalison", Description: "teste", MediumPrice: "3,15"},
+type BookController struct {
+	services IBookService
 }
 
-func ShowBook(c *gin.Context) {
+func NewBookController(services IBookService) BookController {
+	return BookController{services: services}
+}
+
+func (s *BookController) ShowBook(c *gin.Context) {
 	id := c.Param("id")
 
 	newId, err := strconv.Atoi(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"message": "Book not Found",
+			"message": "Id must be a integer",
 		})
 		return
 	}
 
-	db := database.GetDb()
+	book, err := s.services.GetBook(int64(newId))
 
-	var book entity.Book
-	err = db.First(&book, newId).Error
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Can not find book: " + err.Error(),
@@ -35,28 +36,23 @@ func ShowBook(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, book)
+	c.JSON(http.StatusOK, book)
 
 }
 
-func ShowBooks(c *gin.Context) {
-	//db := database.GetDb()
+func (s *BookController) ShowBooks(c *gin.Context) {
+	books, err := s.services.GetBooks()
 
-	//var books []models.Book
-	//err := db.First(&books).Error
-
-	//if err != nil {
-	//	c.JSON(http.StatusNotFound, gin.H{
-	//		"message": "Can list books: " + err.Error(),
-	//	})
-	//	return
-	//}
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": err.Error(),
+		})
+	}
 
 	c.JSON(http.StatusOK, &books)
 }
 
-func CreateBook(c *gin.Context) {
-	//db := database.GetDb()
+func (s *BookController) CreateBook(c *gin.Context) {
 	var newBook entity.Book
 
 	err := c.ShouldBindJSON(&newBook)
@@ -67,9 +63,8 @@ func CreateBook(c *gin.Context) {
 		return
 	}
 
-	//err = db.Create(&book).Error
+	book, err := s.services.CreateBook(&newBook)
 
-	books = append(books, newBook)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Can create book: " + err.Error(),
@@ -77,21 +72,21 @@ func CreateBook(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, books)
+	c.JSON(http.StatusCreated, book)
 }
 
-func DeleteBook(c *gin.Context) {
-	id := c.Param("id")
-
-	for _, a := range books {
-		idConv, err := strconv.Atoi(id)
-		if err != nil {
-			return
-		}
-
-		if int(a.ID) != int(idConv) {
-			c.JSON(http.StatusOK, a)
-			return
-		}
-	}
-}
+//func DeleteBook(c *gin.Context) {
+//	id := c.Param("id")
+//
+//	for _, a := range books {
+//		idConv, err := strconv.Atoi(id)
+//		if err != nil {
+//			return
+//		}
+//
+//		if int(a.ID) != int(idConv) {
+//			c.JSON(http.StatusOK, a)
+//			return
+//		}
+//	}
+//}
