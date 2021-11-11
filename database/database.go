@@ -2,10 +2,10 @@ package database
 
 import (
 	"fmt"
+	"github.com/Thalisonh/crud-golang/database/entity"
 	"log"
 	"os"
 
-	"github.com/Thalisonh/crud-golang/models"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -61,7 +61,7 @@ func Migrate(db *gorm.DB) {
 	log.Printf("\n Creating the migrations...")
 	//Migrations
 
-	db.AutoMigrate(&models.Book{})
+	db.AutoMigrate(&entity.Book{})
 
 	//
 

@@ -1,15 +1,17 @@
-package controllers
+package book
 
 import (
+	"github.com/Thalisonh/crud-golang/database"
+	"github.com/Thalisonh/crud-golang/database/entity"
 	"net/http"
 	"strconv"
 
-	"github.com/Thalisonh/crud-golang/models"
-	"github.com/Thalisonh/crud-golang/server/database"
 	"github.com/gin-gonic/gin"
 )
 
-var books = []models.Book{}
+var books = []entity.Book{
+	{ID: 1, Author: "Thalison", Description: "teste", MediumPrice: "3,15"},
+}
 
 func ShowBook(c *gin.Context) {
 	id := c.Param("id")
@@ -24,7 +26,7 @@ func ShowBook(c *gin.Context) {
 
 	db := database.GetDb()
 
-	var book models.Book
+	var book entity.Book
 	err = db.First(&book, newId).Error
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -38,26 +40,26 @@ func ShowBook(c *gin.Context) {
 }
 
 func ShowBooks(c *gin.Context) {
-	db := database.GetDb()
+	//db := database.GetDb()
 
-	var books []models.Book
-	err := db.First(&books).Error
+	//var books []models.Book
+	//err := db.First(&books).Error
 
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "Can list books: " + err.Error(),
-		})
-		return
-	}
+	//if err != nil {
+	//	c.JSON(http.StatusNotFound, gin.H{
+	//		"message": "Can list books: " + err.Error(),
+	//	})
+	//	return
+	//}
 
-	c.JSON(http.StatusOK, books)
+	c.JSON(http.StatusOK, &books)
 }
 
 func CreateBook(c *gin.Context) {
-	db := database.GetDb()
-	var book models.Book
+	//db := database.GetDb()
+	var newBook entity.Book
 
-	err := c.ShouldBindJSON(&book)
+	err := c.ShouldBindJSON(&newBook)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Can bind Json: " + err.Error(),
@@ -65,7 +67,9 @@ func CreateBook(c *gin.Context) {
 		return
 	}
 
-	err = db.Create(&book).Error
+	//err = db.Create(&book).Error
+
+	books = append(books, newBook)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"message": "Can create book: " + err.Error(),
@@ -80,7 +84,7 @@ func DeleteBook(c *gin.Context) {
 	id := c.Param("id")
 
 	for _, a := range books {
-		idConv, err := strconv.ParseInt(id, 10, 64)
+		idConv, err := strconv.Atoi(id)
 		if err != nil {
 			return
 		}

@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/Thalisonh/crud-golang/controllers"
+	"github.com/Thalisonh/crud-golang/core/book"
 	"github.com/gin-gonic/gin"
 )
 
@@ -10,10 +10,10 @@ func ConfigRoutes(router *gin.Engine) *gin.Engine {
 	{
 		books := main.Group("book")
 		{
-			books.GET("/:id", controllers.ShowBook)
-			books.GET("/", controllers.ShowBooks)
-			books.POST("/", controllers.CreateBook)
-			books.DELETE("/:id", controllers.DeleteBook)
+			books.GET("/:id", book.ShowBook)
+			books.GET("/", book.ShowBooks)
+			books.POST("/", book.CreateBook)
+			books.DELETE("/:id", book.DeleteBook)
 		}
 	}
 	return router
