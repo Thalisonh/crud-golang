@@ -13,4 +13,5 @@ type Book struct {
 	MediumPrice string `gorm: "medium_price"`
 	Author      string `gorm: "author"`
 	ImageURL    string `gorm: "img_url`
+	UserID      uint   `gorm:"user_id"`
 }

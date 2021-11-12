@@ -62,6 +62,7 @@ func Migrate(db *gorm.DB) {
 	//Migrations
 
 	db.AutoMigrate(&entity.Book{})
+	db.AutoMigrate(&entity.User{})
 
 	//
 
@@ -70,23 +71,4 @@ func Migrate(db *gorm.DB) {
 	//Seeds
 
 	log.Printf("\n Creating the Seeds...")
-
-	// status := []entity.Status{
-	// 	{
-	// 		Type: "Ativo",
-	// 	},
-	// 	{
-	// 		Type: "Inativo",
-	// 	},
-	// }
-
-	// SeedPopulateErr := seeds.SeedPopulate(db, status)
-
-	// if SeedPopulateErr != nil {
-	// 	log.Printf(util.ErrorColor(), "\n Error populate status: "+SeedPopulateErr.Error())
-	// 	return
-	// }
-
-	// log.Printf(util.WarningColor(), "\n Created Seeds")
-
 }
