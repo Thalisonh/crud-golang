@@ -3,10 +3,10 @@ package book
 import "github.com/Thalisonh/crud-golang/database/entity"
 
 type IBookService interface {
-	GetBook (book_id int64) (*entity.Book, error)
+	GetBook (bookId int64) (*entity.Book, error)
 	GetBooks() (*[]entity.Book, error)
-	UpdateBook (book *entity.Book) (*entity.Book, error)
-	DeleteBook (book_id int64) error
+	UpdateBook (bookId int64, book *entity.Book) (*entity.Book, error)
+	DeleteBook (book *entity.Book) error
 	CreateBook (book *entity.Book) (*entity.Book, error)
 }
 
@@ -18,8 +18,8 @@ func NewBookService(repository IBookRepository) IBookService {
 	return &BookService{repository: repository}
 }
 
-func (s *BookService) GetBook (book_id int64) (*entity.Book, error){
-	book, err := s.repository.GetBook(book_id)
+func (s *BookService) GetBook (bookId int64) (*entity.Book, error){
+	book, err := s.repository.GetBook(bookId)
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +36,8 @@ func (s *BookService) GetBooks() (*[]entity.Book, error){
 	return books, nil
 }
 
-func (s *BookService) UpdateBook (book *entity.Book) (*entity.Book, error){
-	book, err := s.repository.UpdateBook(book)
+func (s *BookService) UpdateBook (bookId int64, book *entity.Book) (*entity.Book, error){
+	book, err := s.repository.UpdateBook(bookId, book)
 	if err != nil {
 		return nil, err
 	}
@@ -45,13 +45,13 @@ func (s *BookService) UpdateBook (book *entity.Book) (*entity.Book, error){
 	return book, nil
 }
 
-func (s *BookService) DeleteBook (book_id int64) error{
-	book, err := s.repository.GetBook(book_id)
+func (s *BookService) DeleteBook (book *entity.Book) error{
+	book, err := s.repository.GetBook(int64(book.ID))
 	if err != nil {
 		return err
 	}
 
-	bookError := s.DeleteBook(int64(book.ID))
+	bookError := s.repository.DeleteBook(book)
 	if bookError != nil {
 		return bookError
 	}
@@ -60,7 +60,7 @@ func (s *BookService) DeleteBook (book_id int64) error{
 }
 
 func (s *BookService) CreateBook (book *entity.Book) (*entity.Book, error){
-	book, err := s.CreateBook(book)
+	book, err := s.repository.CreateBook(book)
 	if err != nil {
 		return nil, err
 	}

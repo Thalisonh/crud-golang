@@ -8,10 +8,10 @@ import (
 var db *gorm.DB
 
 type IBookRepository interface {
-	GetBook (book_id int64) (*entity.Book, error)
+	GetBook (bookId int64) (*entity.Book, error)
 	GetBooks() (*[]entity.Book, error)
-	UpdateBook (book *entity.Book) (*entity.Book, error)
-	DeleteBook(book_id int64) error
+	UpdateBook (bookId int64, book *entity.Book) (*entity.Book, error)
+	DeleteBook(book *entity.Book) error
 	CreateBook (book *entity.Book) (*entity.Book, error)
 }
 
@@ -33,15 +33,15 @@ func (r *BookRepository) GetBook(book_id int64) (*entity.Book, error){
 
 func (r *BookRepository) GetBooks() (*[]entity.Book, error){
 	var books []entity.Book
-	return &books, r.db.First(&books).Error
+	return &books, r.db.Find(&books).Error
 }
 
-func (r *BookRepository) UpdateBook (book *entity.Book) (*entity.Book, error) {
-	return book, r.db.Save(book).Error
+func (r *BookRepository) UpdateBook (id int64, book *entity.Book) (*entity.Book, error) {
+	return book, r.db.Where("id = ?", id).Save(&book).Error
 }
 
-func (r *BookRepository) DeleteBook(book_id int64) error {
-	return r.db.Where("id = ?", book_id).Delete(&entity.Book{}).Error
+func (r *BookRepository) DeleteBook(book *entity.Book) error {
+	return r.db.Where("id = ?", book.ID).Delete(&entity.Book{}).Error
 }
 
 func (r *BookRepository) CreateBook (book *entity.Book) (*entity.Book, error) {

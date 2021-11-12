@@ -2,11 +2,12 @@ package entity
 
 import (
 	"gorm.io/gorm"
+	"time"
 )
 
 type Book struct {
 	gorm.Model
-	ID          uint   `gorm: "id" gorm: "primaryKey"`
+	CreatedAt time.Time `gorm:"<-:create"`
 	Name        string `gorm: "name"`
 	Description string `gorm: "description"`
 	MediumPrice string `gorm: "medium_price"`
