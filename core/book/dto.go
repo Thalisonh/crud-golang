@@ -12,7 +12,7 @@ type BookRequest struct {
 	MediumPrice string `json: "medium_price"`
 	Author      string `json: "author"`
 	ImageURL    string `json: "img_url`
-	UserID      uint   `json:"user_id"`
+	UserID      int   `json:"user_id"`
 }
 
 type BookResponse struct {
@@ -22,7 +22,7 @@ type BookResponse struct {
 	MediumPrice string `json: "medium_price"`
 	Author      string `json: "author"`
 	ImageURL    string `json: "img_url`
-	UserID      uint   `json:"user_id"`
+	UserID      int   `json:"user_id"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

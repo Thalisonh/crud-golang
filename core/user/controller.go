@@ -73,3 +73,72 @@ func (r *UserController) CreateUser(c *gin.Context) {
 
 	c.JSON(http.StatusCreated, user)
 }
+
+func (r *UserController) Delete(c *gin.Context) {
+	id := c.Param("id")
+	idConv, err := strconv.Atoi(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id must be a integer",
+		})
+		return
+	}
+
+	user, errFind := r.services.GetUser(int64(idConv))
+
+	if errFind != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Entity not found",
+		})
+		return
+	}
+
+	errDelete := r.services.DeleteUser(user)
+
+	if errDelete != nil {
+		c.JSON(http.StatusNotModified, gin.H{
+			"message": errDelete,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Deleted",
+	})
+}
+
+func (r *UserController) UpdateUser(c *gin.Context) {
+	id := c.Param("id")
+	var updateUser entity.User
+
+	err := c.ShouldBindJSON(&updateUser)
+	idUpd, err := strconv.Atoi(id)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id must be a Integer",
+		})
+		return
+	}
+
+	user, errGet := r.services.GetUser(int64(idUpd))
+
+	if errGet != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"message": "Entity not found",
+		})
+		return
+	}
+
+	newUser, err := r.services.UpdateUser(int64(user.ID), &updateUser)
+
+	if err != nil {
+		c.JSON(http.StatusNotModified, gin.H{
+			"message": err,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, &newUser)
+}

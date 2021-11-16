@@ -23,15 +23,16 @@ func ConfigRoutes(router *gin.Engine) *gin.Engine {
 			users.GET("/", userController.GetAll)
 			users.GET("/:id", userController.GetUser)
 			users.POST("/", userController.CreateUser)
-
-			books := main.Group("book")
-			{
-				books.GET("/", bookController.ShowBooks)
-				books.GET("/:id", bookController.ShowBook)
-				books.POST("/", bookController.CreateBook)
-				books.PUT("/:id", bookController.UpdateBook)
-				books.DELETE("/:id", bookController.DeleteBook)
-			}
+			users.DELETE("/:id", userController.Delete)
+			users.PUT("/:id", userController.UpdateUser)
+		}
+		books := main.Group("book/")
+		{
+			books.GET("/users/:id_user", bookController.ShowBooks)
+			books.GET("/users/:id_user/:id", bookController.ShowBook)
+			books.POST("/users/:id_user/", bookController.CreateBook)
+			books.PUT("/users/:id_user/:id", bookController.UpdateBook)
+			books.DELETE("/users/:id_user/:id", bookController.DeleteBook)
 		}
 
 	}

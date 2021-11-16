@@ -1,7 +1,6 @@
 package book
 
 import (
-	"fmt"
 	"github.com/Thalisonh/crud-golang/database/entity"
 	"net/http"
 	"strconv"
@@ -19,6 +18,7 @@ func NewBookController(services IBookService) BookController {
 
 func (s *BookController) ShowBook(c *gin.Context) {
 	id := c.Param("id")
+	idUser := c.Param("id_user")
 
 	newId, err := strconv.Atoi(id)
 	if err != nil {
@@ -28,7 +28,15 @@ func (s *BookController) ShowBook(c *gin.Context) {
 		return
 	}
 
-	book, err := s.services.GetBook(int64(newId))
+	newUserId, err := strconv.Atoi(idUser)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "User id must be a integer",
+		})
+	}
+
+	book, err := s.services.GetBook(int64(newId), int64(newUserId))
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -42,7 +50,10 @@ func (s *BookController) ShowBook(c *gin.Context) {
 }
 
 func (s *BookController) ShowBooks(c *gin.Context) {
-	books, err := s.services.GetBooks()
+	id := c.Param("id_user")
+	idUser, err := strconv.Atoi(id)
+
+	books, err := s.services.GetBooks(int64(idUser))
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -55,34 +66,48 @@ func (s *BookController) ShowBooks(c *gin.Context) {
 
 func (s *BookController) CreateBook(c *gin.Context) {
 	var newBook entity.Book
+	idUser := c.Param("id_user")
+	id, err := strconv.Atoi(idUser)
 
-	err := c.ShouldBindJSON(&newBook)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": "Can bind Json: " + err.Error(),
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id must be a Integer",
 		})
 		return
 	}
 
-	book, err := s.services.CreateBook(&newBook)
+	c.ShouldBindJSON(&newBook)
 
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{
-			"message": err.Error(),
+	newBook.UserID = int(id)
+
+	user, err := s.services.CreateBook(&newBook)
+
+	if err != nil{
+		c.JSON(http.StatusNotModified, gin.H{
+			"message": err,
 		})
 		return
 	}
 
-	c.JSON(http.StatusCreated, book)
+	c.JSON(http.StatusOK, user)
 }
 
 func (s *BookController) UpdateBook(c *gin.Context){
 	var newBook entity.Book
 	id := c.Param("id")
+	idUser := c.Param("id_user")
 
 	newId, errConv := strconv.Atoi(id)
+	newIdUser, errUser := strconv.Atoi(idUser)
 
 	if errConv != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Id must be a integer",
+		})
+		return
+	}
+
+	if errUser != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Id must be a integer",
 		})
@@ -98,7 +123,7 @@ func (s *BookController) UpdateBook(c *gin.Context){
 		return
 	}
 
-	_, errFind := s.services.GetBook(int64(newId))
+	_, errFind := s.services.GetBook(int64(newId), int64(newIdUser))
 
 	if errFind != nil {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -106,6 +131,8 @@ func (s *BookController) UpdateBook(c *gin.Context){
 		})
 		return
 	}
+
+	newBook.UserID = int(newIdUser)
 
 	bookUpdated, err := s.services.UpdateBook(int64(newId), &newBook)
 
@@ -121,10 +148,9 @@ func (s *BookController) UpdateBook(c *gin.Context){
 
 func (s *BookController) DeleteBook(c *gin.Context) {
 	id := c.Param("id")
-	fmt.Errorf("id:", id)
-	//
+	idUser := c.Param("id_user")
+
 	newId, err := strconv.Atoi(id)
-	//
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "ID must be a integer",
@@ -132,7 +158,15 @@ func (s *BookController) DeleteBook(c *gin.Context) {
 		return
 	}
 
-	bookDeleted, err := s.services.GetBook(int64(newId))
+	newIdUser, errUser := strconv.Atoi(idUser)
+	if errUser != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "ID must be a integer",
+		})
+		return
+	}
+
+	bookDeleted, err := s.services.GetBook(int64(newId), int64(newIdUser))
 
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
@@ -141,7 +175,7 @@ func (s *BookController) DeleteBook(c *gin.Context) {
 		return
 	}
 
-	deletedErr := s.services.DeleteBook(bookDeleted)
+	deletedErr := s.services.DeleteBook(bookDeleted, int64(newIdUser))
 
 	if deletedErr != nil {
 		c.JSON(http.StatusNotModified, gin.H{
@@ -151,5 +185,4 @@ func (s *BookController) DeleteBook(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, deletedErr)
-	//c.JSON(http.StatusOK, deletedErr)
 }

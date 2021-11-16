@@ -8,6 +8,7 @@ type IUserService interface {
 	CreateUser(user *entity.User) (*entity.User, error)
 	DeleteUser(user *entity.User) error
 	UpdateUser(userId int64, user *entity.User) (*entity.User, error)
+	//AddBook(userId int64, book *entity.Book) (*entity.User, error)
 }
 
 type UserService struct {
@@ -50,10 +51,10 @@ func (s *UserService) CreateUser(user *entity.User) (*entity.User, error) {
 	return user, err
 }
 func (s *UserService) DeleteUser(user *entity.User) error {
-	user, err := s.repository.GetUser(int64(user.ID))
-	if err != nil {
-		return err
-	}
+	//user, err := s.repository.GetUser(int64(user.ID))
+	//if err != nil {
+	//	return err
+	//}
 
 	bookError := s.repository.DeleteUser(user)
 	if bookError != nil {

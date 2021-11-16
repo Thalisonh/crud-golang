@@ -42,7 +42,7 @@ func (r *UserRepository) UpdateUser (userId int64, user *entity.User) (*entity.U
 }
 
 func (r *UserRepository) DeleteUser(user *entity.User) error {
-	return r.db.Where("id = ?", user.ID).Delete(&entity.Book{}).Error
+	return r.db.Delete(&user).Error
 }
 
 func (r *UserRepository) CreateUser (user *entity.User) (*entity.User, error) {

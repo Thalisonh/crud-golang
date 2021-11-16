@@ -8,10 +8,10 @@ import (
 var db *gorm.DB
 
 type IBookRepository interface {
-	GetBook (bookId int64) (*entity.Book, error)
-	GetBooks() (*[]entity.Book, error)
+	GetBook (bookId int64, userId int64) (*entity.Book, error)
+	GetBooks(userId int64) (*[]entity.Book, error)
 	UpdateBook (bookId int64, book *entity.Book) (*entity.Book, error)
-	DeleteBook(book *entity.Book) error
+	DeleteBook(book *entity.Book, userId int64) error
 	CreateBook (book *entity.Book) (*entity.Book, error)
 }
 
@@ -24,24 +24,24 @@ func NewBookRepository(db *gorm.DB) IBookRepository {
 }
 
 
-func (r *BookRepository) GetBook(book_id int64) (*entity.Book, error){
+func (r *BookRepository) GetBook(bookId int64, userId int64) (*entity.Book, error){
 	var bookModel entity.Book
-	err := r.db.Where("id = ?", book_id).First(&bookModel).Error
+	err := r.db.Where("id = ? AND user_id = ?", bookId, userId).First(&bookModel).Error
 
 	return &bookModel, err
 }
 
-func (r *BookRepository) GetBooks() (*[]entity.Book, error){
+func (r *BookRepository) GetBooks(userId int64) (*[]entity.Book, error){
 	var books []entity.Book
-	return &books, r.db.Find(&books).Error
+	return &books, r.db.Where("user_id = ?", userId).Find(&books).Error
 }
 
 func (r *BookRepository) UpdateBook (id int64, book *entity.Book) (*entity.Book, error) {
 	return book, r.db.Where("id = ?", id).Save(&book).Error
 }
 
-func (r *BookRepository) DeleteBook(book *entity.Book) error {
-	return r.db.Where("id = ?", book.ID).Delete(&entity.Book{}).Error
+func (r *BookRepository) DeleteBook(book *entity.Book, userId int64) error {
+	return r.db.Where("id = ? AND user_id = ?", book.ID, userId).Delete(&entity.Book{}).Error
 }
 
 func (r *BookRepository) CreateBook (book *entity.Book) (*entity.Book, error) {
