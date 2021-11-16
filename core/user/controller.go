@@ -7,15 +7,15 @@ import (
 	"strconv"
 )
 
-type UserController struct {
+type ControllerUser struct {
 	services IUserService
 }
 
-func NewUserController(service IUserService) UserController {
-	return UserController{services: service}
+func NewUserController(service IUserService) ControllerUser {
+	return ControllerUser{services: service}
 }
 
-func (r *UserController) GetAll(c *gin.Context){
+func (r *ControllerUser) GetAll(c *gin.Context){
 	users, err := r.services.GetUsers()
 
 	if err != nil {
@@ -28,7 +28,7 @@ func (r *UserController) GetAll(c *gin.Context){
 	c.JSON(http.StatusOK, users)
 }
 
-func (r *UserController) GetUser(c *gin.Context) {
+func (r *ControllerUser) GetUser(c *gin.Context) {
 	id := c.Param("id")
 
 	newId, err := strconv.Atoi(id)
@@ -51,7 +51,7 @@ func (r *UserController) GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (r *UserController) CreateUser(c *gin.Context) {
+func (r *ControllerUser) CreateUser(c *gin.Context) {
 	var newUser entity.User
 
 	err := c.ShouldBindJSON(&newUser)
@@ -74,7 +74,7 @@ func (r *UserController) CreateUser(c *gin.Context) {
 	c.JSON(http.StatusCreated, user)
 }
 
-func (r *UserController) Delete(c *gin.Context) {
+func (r *ControllerUser) Delete(c *gin.Context) {
 	id := c.Param("id")
 	idConv, err := strconv.Atoi(id)
 
@@ -108,7 +108,7 @@ func (r *UserController) Delete(c *gin.Context) {
 	})
 }
 
-func (r *UserController) UpdateUser(c *gin.Context) {
+func (r *ControllerUser) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	var updateUser entity.User
 

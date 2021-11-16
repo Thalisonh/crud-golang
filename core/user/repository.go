@@ -5,8 +5,6 @@ import (
 	"gorm.io/gorm"
 )
 
-var db *gorm.DB
-
 type IUserRepository interface {
 	GetUser (userId int64) (*entity.User, error)
 	GetUsers() (*[]entity.User, error)
@@ -15,37 +13,37 @@ type IUserRepository interface {
 	CreateUser (user *entity.User) (*entity.User, error)
 }
 
-type UserRepository struct {
+type RepositoryUser struct {
 	db *gorm.DB
 }
 
 func NewUserRepository(db *gorm.DB) IUserRepository {
-	return &UserRepository{db: db}
+	return &RepositoryUser{db: db}
 }
 
-func (r *UserRepository) GetUser (userId int64) (*entity.User, error) {
+func (r *RepositoryUser) GetUser (userId int64) (*entity.User, error) {
 	var user entity.User
 	err := r.db.Where("id = ?", userId).First(&user).Error
 
 	return &user, err
 }
 
-func (r *UserRepository) GetUsers() (*[]entity.User, error) {
+func (r *RepositoryUser) GetUsers() (*[]entity.User, error) {
 	var user []entity.User
 	err := r.db.Find(&user).Error
 
 	return &user, err
 }
 
-func (r *UserRepository) UpdateUser (userId int64, user *entity.User) (*entity.User, error) {
+func (r *RepositoryUser) UpdateUser (userId int64, user *entity.User) (*entity.User, error) {
 	return user, r.db.Where("id = ?", userId).Save(&user).Error
 }
 
-func (r *UserRepository) DeleteUser(user *entity.User) error {
+func (r *RepositoryUser) DeleteUser(user *entity.User) error {
 	return r.db.Delete(&user).Error
 }
 
-func (r *UserRepository) CreateUser (user *entity.User) (*entity.User, error) {
+func (r *RepositoryUser) CreateUser (user *entity.User) (*entity.User, error) {
 	return user, r.db.Create(&user).Error
 }
 

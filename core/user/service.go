@@ -11,15 +11,15 @@ type IUserService interface {
 	//AddBook(userId int64, book *entity.Book) (*entity.User, error)
 }
 
-type UserService struct {
+type ServiceUser struct {
 	repository IUserRepository
 }
 
 func NewUserService(repository IUserRepository) IUserService {
-	return &UserService{repository: repository}
+	return &ServiceUser{repository: repository}
 }
 
-func (s *UserService) GetUsers() (*[]entity.User, error){
+func (s *ServiceUser) GetUsers() (*[]entity.User, error){
 	var users *[]entity.User
 	users, err := s.repository.GetUsers()
 
@@ -29,7 +29,7 @@ func (s *UserService) GetUsers() (*[]entity.User, error){
 
 	return users, nil
 }
-func (s *UserService) GetUser(userId int64) (*entity.User, error){
+func (s *ServiceUser) GetUser(userId int64) (*entity.User, error){
 	var user *entity.User
 
 	user, err := s.repository.GetUser(userId)
@@ -41,7 +41,7 @@ func (s *UserService) GetUser(userId int64) (*entity.User, error){
 	return user, err
 }
 
-func (s *UserService) CreateUser(user *entity.User) (*entity.User, error) {
+func (s *ServiceUser) CreateUser(user *entity.User) (*entity.User, error) {
 	user, err := s.repository.CreateUser(user)
 
 	if err != nil {
@@ -50,7 +50,7 @@ func (s *UserService) CreateUser(user *entity.User) (*entity.User, error) {
 
 	return user, err
 }
-func (s *UserService) DeleteUser(user *entity.User) error {
+func (s *ServiceUser) DeleteUser(user *entity.User) error {
 	//user, err := s.repository.GetUser(int64(user.ID))
 	//if err != nil {
 	//	return err
@@ -64,7 +64,7 @@ func (s *UserService) DeleteUser(user *entity.User) error {
 	return nil
 }
 
-func (s *UserService) UpdateUser(userId int64, user *entity.User) (*entity.User, error){
+func (s *ServiceUser) UpdateUser(userId int64, user *entity.User) (*entity.User, error){
 	user, err := s.repository.UpdateUser(userId, user)
 	if err != nil {
 		return nil, err

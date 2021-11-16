@@ -8,15 +8,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type BookController struct {
+type ControllerBook struct {
 	services IBookService
 }
 
-func NewBookController(services IBookService) BookController {
-	return BookController{services: services}
+func NewBookController(services IBookService) ControllerBook {
+	return ControllerBook{services: services}
 }
 
-func (s *BookController) ShowBook(c *gin.Context) {
+func (s *ControllerBook) ShowBook(c *gin.Context) {
 	id := c.Param("id")
 	idUser := c.Param("id_user")
 
@@ -49,7 +49,7 @@ func (s *BookController) ShowBook(c *gin.Context) {
 
 }
 
-func (s *BookController) ShowBooks(c *gin.Context) {
+func (s *ControllerBook) ShowBooks(c *gin.Context) {
 	id := c.Param("id_user")
 	idUser, err := strconv.Atoi(id)
 
@@ -64,7 +64,7 @@ func (s *BookController) ShowBooks(c *gin.Context) {
 	c.JSON(http.StatusOK, &books)
 }
 
-func (s *BookController) CreateBook(c *gin.Context) {
+func (s *ControllerBook) CreateBook(c *gin.Context) {
 	var newBook entity.Book
 	idUser := c.Param("id_user")
 	id, err := strconv.Atoi(idUser)
@@ -76,9 +76,14 @@ func (s *BookController) CreateBook(c *gin.Context) {
 		return
 	}
 
-	c.ShouldBindJSON(&newBook)
+	errJson := c.ShouldBindJSON(&newBook)
+	if errJson != nil {
+		c.JSON(http.StatusBadGateway, gin.H{
+			"message": errJson,
+		})
+	}
 
-	newBook.UserID = int(id)
+	newBook.UserID = id
 
 	user, err := s.services.CreateBook(&newBook)
 
@@ -92,7 +97,7 @@ func (s *BookController) CreateBook(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-func (s *BookController) UpdateBook(c *gin.Context){
+func (s *ControllerBook) UpdateBook(c *gin.Context){
 	var newBook entity.Book
 	id := c.Param("id")
 	idUser := c.Param("id_user")
@@ -132,9 +137,9 @@ func (s *BookController) UpdateBook(c *gin.Context){
 		return
 	}
 
-	newBook.UserID = int(newIdUser)
+	newBook.UserID = newIdUser
 
-	bookUpdated, err := s.services.UpdateBook(int64(newId), &newBook)
+	bookUpdated, err := s.services.UpdateBook(int64(newId), int64(newIdUser), &newBook)
 
 	if err != nil {
 		c.JSON(http.StatusNotModified, gin.H{
@@ -146,7 +151,7 @@ func (s *BookController) UpdateBook(c *gin.Context){
 	c.JSON(http.StatusOK, bookUpdated)
 }
 
-func (s *BookController) DeleteBook(c *gin.Context) {
+func (s *ControllerBook) DeleteBook(c *gin.Context) {
 	id := c.Param("id")
 	idUser := c.Param("id_user")
 

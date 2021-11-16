@@ -5,20 +5,20 @@ import "github.com/Thalisonh/crud-golang/database/entity"
 type IBookService interface {
 	GetBook (bookId int64, userId int64) (*entity.Book, error)
 	GetBooks(userId int64) (*[]entity.Book, error)
-	UpdateBook (bookId int64, book *entity.Book) (*entity.Book, error)
+	UpdateBook (bookId int64, userId int64, book *entity.Book) (*entity.Book, error)
 	DeleteBook (book *entity.Book, userId int64) error
 	CreateBook (book *entity.Book) (*entity.Book, error)
 }
 
-type BookService struct {
+type ServiceBook struct {
 	repository IBookRepository
 }
 
 func NewBookService(repository IBookRepository) IBookService {
-	return &BookService{repository: repository}
+	return &ServiceBook{repository: repository}
 }
 
-func (s *BookService) GetBook (bookId int64, userId int64) (*entity.Book, error){
+func (s *ServiceBook) GetBook (bookId int64, userId int64) (*entity.Book, error){
 	book, err := s.repository.GetBook(bookId, userId)
 	if err != nil {
 		return nil, err
@@ -27,7 +27,7 @@ func (s *BookService) GetBook (bookId int64, userId int64) (*entity.Book, error)
 	return book, nil
 }
 
-func (s *BookService) GetBooks(userId int64) (*[]entity.Book, error){
+func (s *ServiceBook) GetBooks(userId int64) (*[]entity.Book, error){
 	books, err := s.repository.GetBooks(userId)
 	if err != nil {
 		return nil, err
@@ -36,8 +36,8 @@ func (s *BookService) GetBooks(userId int64) (*[]entity.Book, error){
 	return books, nil
 }
 
-func (s *BookService) UpdateBook (bookId int64, book *entity.Book) (*entity.Book, error){
-	book, err := s.repository.UpdateBook(bookId, book)
+func (s *ServiceBook) UpdateBook (bookId int64, userId int64, book *entity.Book) (*entity.Book, error){
+	book, err := s.repository.UpdateBook(bookId, userId, book)
 	if err != nil {
 		return nil, err
 	}
@@ -45,7 +45,7 @@ func (s *BookService) UpdateBook (bookId int64, book *entity.Book) (*entity.Book
 	return book, nil
 }
 
-func (s *BookService) DeleteBook (book *entity.Book, userId int64) error{
+func (s *ServiceBook) DeleteBook (book *entity.Book, userId int64) error{
 	book, err := s.repository.GetBook(int64(book.ID), userId)
 	if err != nil {
 		return err
@@ -59,7 +59,7 @@ func (s *BookService) DeleteBook (book *entity.Book, userId int64) error{
 	return nil
 }
 
-func (s *BookService) CreateBook (book *entity.Book) (*entity.Book, error){
+func (s *ServiceBook) CreateBook (book *entity.Book) (*entity.Book, error){
 	book, err := s.repository.CreateBook(book)
 	if err != nil {
 		return nil, err
