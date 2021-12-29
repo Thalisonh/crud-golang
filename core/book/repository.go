@@ -22,14 +22,14 @@ func NewBookRepository(db *gorm.DB) IBookRepository {
 }
 
 
-func (r *RepositoryBook) GetBook(bookId int64, userId int64) (*entity.Book, error){
+func (r *RepositoryBook) GetBook(bookId int64, userId int64) (*entity.Book, error) {
 	var bookModel entity.Book
 	err := r.db.Where("id = ? AND user_id = ?", bookId, userId).First(&bookModel).Error
 
 	return &bookModel, err
 }
 
-func (r *RepositoryBook) GetBooks(userId int64) (*[]entity.Book, error){
+func (r *RepositoryBook) GetBooks(userId int64) (*[]entity.Book, error) {
 	var books []entity.Book
 	return &books, r.db.Where("user_id = ?", userId).Find(&books).Error
 }

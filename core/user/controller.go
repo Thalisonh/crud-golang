@@ -1,10 +1,12 @@
 package user
 
 import (
-	"github.com/Thalisonh/crud-golang/database/entity"
-	"github.com/gin-gonic/gin"
 	"net/http"
 	"strconv"
+
+	"github.com/Thalisonh/crud-golang/database/entity"
+	"github.com/Thalisonh/crud-golang/services"
+	"github.com/gin-gonic/gin"
 )
 
 type ControllerUser struct {
@@ -15,7 +17,7 @@ func NewUserController(service IUserService) ControllerUser {
 	return ControllerUser{services: service}
 }
 
-func (r *ControllerUser) GetAll(c *gin.Context){
+func (r *ControllerUser) GetAll(c *gin.Context) {
 	users, err := r.services.GetUsers()
 
 	if err != nil {
@@ -61,6 +63,8 @@ func (r *ControllerUser) CreateUser(c *gin.Context) {
 		})
 		return
 	}
+
+	newUser.Password = services.Sha256Encoder(newUser.Password)
 
 	user, err := r.services.CreateUser(&newUser)
 

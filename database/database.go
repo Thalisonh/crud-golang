@@ -33,7 +33,7 @@ func StartDB(
 	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 
 	if err != nil {
-		log.Fatal("ERRO: ", err)
+		log.Fatal("ERROR: ", err)
 	}
 
 	log.Printf("\nConnected")
@@ -61,14 +61,16 @@ func Migrate(db *gorm.DB) {
 	log.Printf("\n Creating the migrations...")
 	//Migrations
 
-	db.AutoMigrate(&entity.Book{})
-	db.AutoMigrate(&entity.User{})
-
-	//
+	errBook := db.AutoMigrate(&entity.Book{})
+	if errBook != nil {
+		log.Fatal("AutoMigrate book: ", errBook.Error())
+		return
+	}
+	errUser := db.AutoMigrate(&entity.User{})
+	if errUser != nil {
+		log.Fatal("AutoMigrate user: ", errUser.Error())
+		return
+	}
 
 	log.Printf("\n Created the migrations...")
-
-	//Seeds
-
-	log.Printf("\n Creating the Seeds...")
 }
